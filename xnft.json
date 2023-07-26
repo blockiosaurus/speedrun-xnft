@@ -1,8 +1,8 @@
 {
-  "name": "xNFT Quickstart",
+  "name": "xNFT Farm",
   "version": "0.0.1",
   "storage": "",
-  "description": "React Native Example",
+  "description": "DeFi Farming with an xNFT",
   "website": "http://wao.gg",
   "kind": "app",
   "icon": {
