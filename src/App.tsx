@@ -1,6 +1,7 @@
 import { registerRootComponent } from "expo";
 import { View } from "react-native";
 import { config } from "./config";
+window.Buffer = window.Buffer || require("buffer").Buffer;
 // import { RecoilRoot } from "recoil";
 // import { ActivityIndicator, View } from "react-native";
 // import { NavigationContainer } from "@react-navigation/native";
