@@ -1,12 +1,14 @@
 import * as Phaser from 'phaser';
 import { stakeBSOL } from '../utils/blazeStake';
-// import Player from '../components/player';
-// import Controls from '../components/controls/controls';
+import Player from '../components/player';
+import Controls from '../components/controls/controls';
+
+export const HUD_HEIGHT = 48;
 
 export default class GameScene extends Phaser.Scene {
-    // cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    // controls: Controls;
-    // player: Player;
+    cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+    controls!: Controls;
+    player!: Player;
     image!: Phaser.Physics.Arcade.Image;
 
     constructor() {
@@ -15,13 +17,13 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         // this.load.image('background', 'assets/background.png');
-        // this.load.image('tiles', 'assets/tiles.png');
-        // this.load.tilemapTiledJSON('map', 'assets/map.json');
-        // this.load.spritesheet('player', 'assets/player.png', { frameWidth: 32, frameHeight: 32 });
-        // this.load.image('controls', 'assets/controls.png');
+        this.load.image('BuildingTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_Buildings.png');
+        this.load.image('CropTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_Crops_Mining.png');
+        this.load.image('MainTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_MainLev.png');
+        this.load.tilemapTiledJSON('map', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Map.json');
+        this.load.spritesheet('player', 'https://raw.githubusercontent.com/Bread-Heads-NFT/phaser-solana-platformer-template/master/src/assets/player.png', { frameWidth: 32, frameHeight: 32 });
         this.load.image('icon', 'https://soladex.io/wp-content/uploads/elementor/thumbs/backpack-solana-logo-q31m754a0n12epfgt5dy2hym74ppd20ylpqct4hhao.jpg');
-        this.load.image('dirt', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/dirt.png');
-        this.load.image('crop', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/crop.png');
+        this.scene.launch('inventory');
     }
 
     create() {
@@ -32,55 +34,54 @@ export default class GameScene extends Phaser.Scene {
         const height = window.innerHeight;
         console.log(this);
         console.log(width, height);
-        // const map = this.make.tilemap({ key: 'map' });
-        // map.setCollision([496, 497, 498, 499]);
-        // console.log('map: ', map);
-        // const tiles = map.addTilesetImage('Kenney', 'tiles');
-        // console.log('tilesets: ', map.tilesets);
+        const map = this.make.tilemap({ key: 'map' });
+        console.log('map: ', map);
+        const mainTiles = map.addTilesetImage('General', 'MainTiles');
+        const buildingTiles = map.addTilesetImage('Buildings', 'BuildingTiles');
+        console.log('tilesets: ', map.tilesets);
 
         this.cameras.main.setBackgroundColor('#000000')
         this.cameras.main.fadeIn()
-
-        // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        // this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        this.cameras.main.setSize(this.cameras.main.width, this.cameras.main.height - HUD_HEIGHT)
+        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
         // this.input.addPointer(1);
         // this.cursors = this.input.keyboard!.createCursorKeys();
 
-        this.image = this.physics.add.image(0, 0, 'icon').setOrigin(0, 0).setDisplaySize(64, 64);
-        this.image.setVelocity(Math.random() * 2000 - 10, Math.random() * 2000 - 10);
+        // this.image = this.physics.add.image(0, 0, 'icon').setOrigin(0, 0).setDisplaySize(64, 64);
+        // this.image.setVelocity(Math.random() * 2000 - 10, Math.random() * 2000 - 10);
 
-        this.physics.add.image(width / 2, height / 2, 'dirt').setInteractive();
-        this.input.on('gameobjectdown', (pointer: Phaser.Input.Pointer, gameObject: Phaser.Physics.Arcade.Image) => {
-            // console.log(pointer);
-            // console.log(gameObject);
-            stakeBSOL(window.xnft.solana.publicKey).then((info) => {
-                this.physics.add.image(width / 2, height / 2, 'crop').setInteractive();
-            });
-        }, this);
+        // this.physics.add.image(width / 2, height / 2, 'dirt').setInteractive();
+        // this.input.on('gameobjectdown', (pointer: Phaser.Input.Pointer, gameObject: Phaser.Physics.Arcade.Image) => {
+        //     // console.log(pointer);
+        //     // console.log(gameObject);
+        //     stakeBSOL(window.xnft.solana.publicKey).then((info) => {
+        //         this.physics.add.image(width / 2, height / 2, 'crop').setInteractive();
+        //     });
+        // }, this);
 
-        // const layer = map.createLayer(0, tiles!, 0, 0);
-        // this.player = new Player(this, 100, 100);
+        const groundLayer = map.createLayer(0, [mainTiles!, buildingTiles!], 0, 0);
+        const cropsLayer = map.createLayer(1, [mainTiles!, buildingTiles!], 0, 0);
+        const obstaclesLayer = map.createLayer(2, [mainTiles!, buildingTiles!], 0, 0);
+        const interactableLayer = map.createLayer(3, [mainTiles!, buildingTiles!], 0, 0);
+        this.player = new Player(this, map.widthInPixels/2, map.heightInPixels/2, "player");
         // this.controls = new Controls(this);
 
-        // this.physics.add.collider(this.player, layer!);
+        map.setCollisionByExclusion([], true, false, obstaclesLayer!);
+        this.physics.add.collider(this.player, obstaclesLayer!);
         // console.log(layer);
 
-        // this.cameras.main.startFollow(this.player);
+        this.cameras.main.startFollow(this.player);
+
+        interactableLayer?.setInteractive();
+        this.input.on('gameobjectdown', (pointer: Phaser.Input.Pointer, gameObject: Phaser.Physics.Arcade.Image) => {
+            console.log(gameObject);
+            stakeBSOL(window.xnft.solana.publicKey).then((info) => {console.log("Done")});
+        }, this);
     }
 
     update() {
-        if (this.image.x < 0) {
-            this.image.setVelocityX(Math.random() * 2000);
-        } else if (this.image.x > this.sys.canvas.width - this.image.width) {
-            this.image.setVelocityX(-Math.random() * 2000);
-        }
-        if (this.image.y < 0) {
-            this.image.setVelocityY(Math.random() * 2000);
-        } else if (this.image.y > this.sys.canvas.height - this.image.height) {
-            this.image.setVelocityY(-Math.random() * 2000);
-        }
-        // this.player.update(this.cursors, this.controls);
-        // this.controls.update();
+        this.player.update();
     }
 }
