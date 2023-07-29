@@ -8,7 +8,7 @@ export const DEFAULT_WIDTH: number = 630
 export const DEFAULT_HEIGHT: number = 462
 
 export const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO,
     backgroundColor: '#000000',
     parent: 'phaser-game',
     width: DEFAULT_WIDTH,

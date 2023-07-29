@@ -1,6 +1,9 @@
 import * as Phaser from 'phaser';
 import { HUD_HEIGHT } from './game';
 import { BONK_MINT, BSOL_MINT, LAINESOL_MINT, getTokenBalance } from '../utils/token';
+import EventsCenter from '../components/eventCenter';
+import { Program } from '@coral-xyz/anchor';
+import { fetchCrops, getProgram } from '../utils/speedrunProgram';
 // import EventsCenter from '../components/events_center';
 
 const NUM_ICONS = 6;
@@ -19,6 +22,10 @@ export default class InventoryScene extends Phaser.Scene {
     lsolLabel!: Phaser.GameObjects.Text;
     bonkLabel!: Phaser.GameObjects.Text;
     activeItem: string | null = null;
+    program!: Program;
+    bsolPlanted = false;
+    lsolPlanted = false;
+    bonkPlanted = false;
 
     constructor() {
         super('inventory');
@@ -37,9 +44,9 @@ export default class InventoryScene extends Phaser.Scene {
         const spacing = (this.cameras.main.width - (HUD_HEIGHT * NUM_ICONS)) / (NUM_ICONS + 1);
         let offset = spacing;
         for (const item of ["scythe", "wateringCan", "solana", "solBlazePacket", "laineSolPacket", "bonkPacket"]) {
-            let img = this.add.image(offset + HUD_HEIGHT / 2, this.cameras.main.height - HUD_HEIGHT + HUD_HEIGHT * .25, item)
+            let img = this.add.image(offset + HUD_HEIGHT / 2, this.cameras.main.height - HUD_HEIGHT + HUD_HEIGHT * .325, item)
                 .setOrigin(0.5, 0.5)
-                .setDisplaySize(HUD_HEIGHT * .5, HUD_HEIGHT * .5)
+                .setDisplaySize(HUD_HEIGHT * .75, HUD_HEIGHT * .75)
                 .setInteractive()
                 .setData("item", item);
             this.items.set(item, img);
@@ -94,6 +101,8 @@ export default class InventoryScene extends Phaser.Scene {
         // this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
         //     EventsCenter.off('set-dialog', this.setDialog, this)
         // })
+        this.program = getProgram();
+
         this.input.on('gameobjectdown', (pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.Image) => {
             const key = gameObject.getData("item");
             if (key) {
@@ -109,24 +118,44 @@ export default class InventoryScene extends Phaser.Scene {
                     this.items.get(key)!.setAlpha(0.5);
                 }
             }
+            EventsCenter.emit('select-item', key);
         });
+
+        EventsCenter.on('planted', this.setPlanted, this);
+        EventsCenter.on('harvested', this.setHarvested, this);
     }
 
     update(time: number, delta: number) {
         if ((time - this.lastUpdate) > UPDATE_PERIOD) {
             this.lastUpdate = time;
+
             getTokenBalance(null).then((balance) => {
                 this.solLabel.setText(formatNumber(balance as number));
             });
-            getTokenBalance(BSOL_MINT).then((balance) => {
-                this.bsolLabel.setText(formatNumber(balance as number));
-            });
-            getTokenBalance(LAINESOL_MINT).then((balance) => {
-                this.lsolLabel.setText(formatNumber(balance as number));
-            });
-            getTokenBalance(BONK_MINT).then((balance) => {
-                this.bonkLabel.setText(formatNumber(balance as number));
-            });
+
+            if (!this.bsolPlanted) {
+                getTokenBalance(BSOL_MINT).then((balance) => {
+                    this.bsolLabel.setText(formatNumber(balance as number));
+                });
+            } else {
+                this.bsolLabel.setText("Planted");
+            }
+
+            if (!this.lsolPlanted) {
+                getTokenBalance(LAINESOL_MINT).then((balance) => {
+                    this.lsolLabel.setText(formatNumber(balance as number));
+                });
+            } else {
+                this.lsolLabel.setText("Planted");
+            }
+
+            if (!this.bonkPlanted) {
+                getTokenBalance(BONK_MINT).then((balance) => {
+                    this.bonkLabel.setText(formatNumber(balance as number));
+                });
+            } else {
+                this.bonkLabel.setText("Planted");
+            }
         }
         // if (this.printing) {
         //     let elapsed = Math.round((time - this.enqueueTime) / DIALOG_PERIOD);
@@ -135,6 +164,30 @@ export default class InventoryScene extends Phaser.Scene {
         //         this.printing = false;
         //     }
         // }
+    }
+
+    setPlanted(cropType: string) {
+        if (cropType === "blaze") {
+            this.bsolPlanted = true;
+        }
+        else if (cropType === "laine") {
+            this.lsolPlanted = true;
+        }
+        else if (cropType === "bonk") {
+            this.bonkPlanted = true;
+        }
+    }
+
+    setHarvested(cropType: string) {
+        if (cropType === "blaze") {
+            this.bsolPlanted = false;
+        }
+        else if (cropType === "laine") {
+            this.lsolPlanted = false;
+        }
+        else if (cropType === "bonk") {
+            this.bonkPlanted = false;
+        }
     }
 }
 
