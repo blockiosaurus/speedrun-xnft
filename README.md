@@ -12,6 +12,9 @@ Select items from the inventory bar at the bottom and click a location on the ma
 
 The avatar moves around as you place your mouse or fingers at the edge of the screen.
 
+## Demo Video
+https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Demo.mp4
+
 # Local Build and Development
 
 ## Developing
