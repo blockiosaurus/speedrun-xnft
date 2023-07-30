@@ -98,7 +98,7 @@ export default class LoginScene extends Phaser.Scene {
 
     update() {
         // console.log(window.phantom.solana.isConnected)
-        if (window.phantom.solana.isConnected && !this.fetched && this.progress === 100) {
+        if ((isXNFT() || window.phantom.solana.isConnected) && !this.fetched && this.progress === 100) {
             this.fetched = true;
             fetchFarm(this.program).then((farm) => {
                 console.log(farm);

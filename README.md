@@ -13,7 +13,7 @@ Select items from the inventory bar at the bottom and click a location on the ma
 The avatar moves around as you place your mouse or fingers at the edge of the screen.
 
 ## Gameplay Video
-![Preview](./assets/Preview.gif)
+![Preview](./assets/Final.gif)
 
 # Local Build and Development
 
