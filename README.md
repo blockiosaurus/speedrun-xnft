@@ -1,5 +1,7 @@
 # Honeypot Fields Client
 
+![Preview](./assets/Preview.png)
+
 The Honeypot fields client is designed to operate as both an xNFT and web app. Currently only the Phantom Wallet is supported.
 
 # Play the Demo
