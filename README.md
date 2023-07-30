@@ -1,6 +1,16 @@
-# xnft-quickstart
+# Honeypot Fields Client
 
-Quickstart repo for building your own xNFT.
+The Honeypot fields client is designed to operate as both an xNFT and web app. Currently only the Phantom Wallet is supported.
+
+# Play the Demo
+The current demo is hosted at https://speedrun-xnft.vercel.app/
+
+## Controls
+Select items from the inventory bar at the bottom and click a location on the map to plant the item.
+
+The avatar moves around as you place your mouse or fingers at the edge of the screen.
+
+# Local Build and Development
 
 ## Developing
 
