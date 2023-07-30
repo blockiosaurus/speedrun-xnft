@@ -12,14 +12,14 @@ Select items from the inventory bar at the bottom and click a location on the ma
 
 The avatar moves around as you place your mouse or fingers at the edge of the screen.
 
-## Demo Video
-https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Demo.mp4
+## Gameplay Video
+![Preview](./assets/Preview.gif)
 
 # Local Build and Development
 
 ## Developing
 
-Once you've installed Backpack, get started building your xNFT with these steps. Note that the packages here will always use the latest, which correspond to the latest tagged build of Backpack. If you have unexepected issues, make sure your package versions match the app version.
+Once you've installed Backpack, get started building your xNFT with these steps. Note that the packages here will always use the latest, which correspond to the latest tagged build of Backpack. If you have unexpected issues, make sure your package versions match the app version.
 
 Further documentation: https://docs.xnfts.dev/getting-started/introduction
 
