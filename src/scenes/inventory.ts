@@ -44,7 +44,7 @@ export default class InventoryScene extends Phaser.Scene {
         const spacing = (this.cameras.main.width - (HUD_HEIGHT * NUM_ICONS)) / (NUM_ICONS + 1);
         let offset = spacing;
         for (const item of ["scythe", "wateringCan", "solana", "solBlazePacket", "laineSolPacket", "bonkPacket"]) {
-            let img = this.add.image(offset + HUD_HEIGHT / 2, this.cameras.main.height - HUD_HEIGHT + HUD_HEIGHT * .325, item)
+            let img = this.add.image(offset + HUD_HEIGHT / 2, this.cameras.main.height - HUD_HEIGHT + HUD_HEIGHT * .375, item)
                 .setOrigin(0.5, 0.5)
                 .setDisplaySize(HUD_HEIGHT * .75, HUD_HEIGHT * .75)
                 .setInteractive()

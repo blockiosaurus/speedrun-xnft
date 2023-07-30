@@ -1,5 +1,5 @@
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { getConnection, getWalletAddress } from './solana';
+import { getConnection, getWalletAddress, isXNFT } from './solana';
 import { MemcmpFilter, PublicKey } from '@solana/web3.js';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 const idl = require('../idls/speedrun_program.json');
@@ -12,6 +12,8 @@ const LAINESOL_FEED = new PublicKey("2EU8d2ohBgKBYnHUFQL3oqQWX2jFkZiKBPmaDAbZMRd
 
 const BONK_MINT = new PublicKey("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263");
 const BONK_FEED = new PublicKey("6qBqGAYmoZw2r4fda7671NSUbcDWE4XicJdJoWqK8aTe");
+
+const TREASURY = new PublicKey("farmywvb5jLLh2WTYhJed9YjVhE88MLChR4vXnVQJfr");
 
 const cropToMint: Map<string, PublicKey> = new Map(
     [["solBlazePacket", BSOL_MINT],
@@ -66,7 +68,13 @@ export enum Growth {
 }
 
 export function getProgram() {
-    const provider = new AnchorProvider(getConnection(), window.xnft.solana, { skipPreflight: true, commitment: 'confirmed', maxRetries: 100 });
+    let wallet;
+    if (isXNFT()) {
+        wallet = window.xnft.solana;
+    } else {
+        wallet = window.phantom.solana;
+    }
+    const provider = new AnchorProvider(getConnection(), wallet, { skipPreflight: true, commitment: 'confirmed', maxRetries: 100 });
     const programId = new PublicKey("FARMTfoLHaQeoYgK1tP3dgC8emwkMtfxyg6ZTS7iMhgr");
     return new Program(idl, programId, provider);
 }
@@ -91,7 +99,7 @@ export async function plantCrop(program: Program, cropType: string, x: number, y
             aggregator: feed,
         })
         .rpc({ skipPreflight: true });
-    console.log(init_tx);
+    // console.log(init_tx);
 }
 
 export async function harvestCrop(program: Program, cropType: string) {
@@ -110,7 +118,7 @@ export async function harvestCrop(program: Program, cropType: string) {
             payer: walletAddress,
         })
         .rpc({ skipPreflight: true });
-    console.log(init_tx);
+    // console.log(init_tx);
 }
 
 export async function updateCrop(program: Program, cropType: string) {
@@ -133,7 +141,7 @@ export async function updateCrop(program: Program, cropType: string) {
             aggregator: feed,
         })
         .rpc({ skipPreflight: true });
-    console.log(init_tx);
+    // console.log(init_tx);
 }
 
 export async function fetchCrops(program: Program) {
@@ -163,4 +171,85 @@ export async function fetchCrops(program: Program) {
         cropList.push(new Crop(x, y, type, balance, growthType));
     }
     return cropList;
+}
+
+export async function fetchFarm(program: Program) {
+    const walletAddress = getWalletAddress();
+    console.log(walletAddress);
+    const filter: MemcmpFilter = {
+        memcmp: {
+            offset: 8,
+            bytes: walletAddress.toBase58(),
+        }
+    };
+
+    const farm = await program.account.farm.all([filter]);
+    console.log(farm);
+    return farm;
+}
+
+export async function initFarm(program: Program) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .initFarm()
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+        })
+        .rpc({ skipPreflight: true });
+}
+
+export async function closeFarm(program: Program) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .closeFarm()
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+        })
+        .rpc({ skipPreflight: true });
+}
+
+export async function buildBed(program: Program) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .build({ item: { bed: {} } })
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+            treasury: TREASURY,
+        })
+        .rpc({ skipPreflight: true });
+}
+
+export async function buildBench(program: Program) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .build({ item: { bench: {} } })
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+            treasury: TREASURY,
+        })
+        .rpc({ skipPreflight: true });
 }

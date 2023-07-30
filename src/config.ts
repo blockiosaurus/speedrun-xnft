@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
 import GameScene from './scenes/game';
 import InventoryScene from './scenes/inventory';
+import HouseScene from './scenes/house';
+import LoginScene from './scenes/login';
 
 type scaleMode = 'FIT' | 'SMOOTH'
 
@@ -24,5 +26,5 @@ export const config: Phaser.Types.Core.GameConfig = {
             debug: false
         },
     },
-    scene: [GameScene, InventoryScene]
+    scene: [LoginScene, GameScene, InventoryScene, HouseScene]
 };
