@@ -2,7 +2,7 @@
 
 ![Preview](./assets/Preview.png)
 
-The Honeypot fields client is designed to operate as both an xNFT and web app. Currently only the Phantom Wallet is supported.
+The Honeypot fields client is designed to operate as both an xNFT and web app. Currently only the Phantom Wallet is supported. Link to [Solana program backend](https://github.com/blockiosaurus/speedrun-program).
 
 # Play the Demo
 The current demo is hosted at https://speedrun-xnft.vercel.app/
