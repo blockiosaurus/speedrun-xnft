@@ -7,7 +7,7 @@ import { fetchCrops, getProgram } from '../utils/speedrunProgram';
 // import EventsCenter from '../components/events_center';
 
 const NUM_ICONS = 6;
-const UPDATE_PERIOD = 10000;
+const UPDATE_PERIOD = 1000;
 
 export default class InventoryScene extends Phaser.Scene {
     // dialogBox: Phaser.GameObjects.Image;
@@ -56,30 +56,30 @@ export default class InventoryScene extends Phaser.Scene {
 
         this.solLabel = this.add.text(this.offsets.get("solana")! + (HUD_HEIGHT / 2), this.cameras.main.height, '0', {
             fontSize: 16,
-            fontFamily: 'Monospace',
+            fontFamily: 'Salmon',
             color: '#000000',
-            backgroundColor: '#0F0',
+            backgroundColor: '#4F4',
         }).setOrigin(0.5, 1);
 
         this.bsolLabel = this.add.text(this.offsets.get("solBlazePacket")! + (HUD_HEIGHT / 2), this.cameras.main.height, '0', {
             fontSize: 16,
-            fontFamily: 'Monospace',
+            fontFamily: 'Salmon',
             color: '#000000',
-            backgroundColor: '#0F0',
+            backgroundColor: '#4F4',
         }).setOrigin(0.5, 1);
 
         this.lsolLabel = this.add.text(this.offsets.get("laineSolPacket")! + (HUD_HEIGHT / 2), this.cameras.main.height, '0', {
             fontSize: 16,
-            fontFamily: 'Monospace',
+            fontFamily: 'Salmon',
             color: '#000000',
-            backgroundColor: '#0F0',
+            backgroundColor: '#4F4',
         }).setOrigin(0.5, 1);
 
         this.bonkLabel = this.add.text(this.offsets.get("bonkPacket")! + (HUD_HEIGHT / 2), this.cameras.main.height, '0', {
             fontSize: 16,
-            fontFamily: 'Monospace',
+            fontFamily: 'Salmon',
             color: '#000000',
-            backgroundColor: '#0F0',
+            backgroundColor: '#4F4',
         }).setOrigin(0.5, 1);
         // this.dialogBox = this.add.image(0, 0, 'dialog').setOrigin(0, 0).setVisible(false);
         // this.label = this.add.text(64, 64, '', {
@@ -130,12 +130,20 @@ export default class InventoryScene extends Phaser.Scene {
             this.lastUpdate = time;
 
             getTokenBalance(null).then((balance) => {
-                this.solLabel.setText(formatNumber(balance as number));
+                if (balance === null) {
+                    this.solLabel.setText(formatNumber(0));
+                } else {
+                    this.solLabel.setText(formatNumber(balance as number));
+                }
             });
 
             if (!this.bsolPlanted) {
                 getTokenBalance(BSOL_MINT).then((balance) => {
-                    this.bsolLabel.setText(formatNumber(balance as number));
+                    if (balance === null) {
+                        this.bsolLabel.setText(formatNumber(0));
+                    } else {
+                        this.bsolLabel.setText(formatNumber(balance as number));
+                    }
                 });
             } else {
                 this.bsolLabel.setText("Planted");
@@ -143,7 +151,11 @@ export default class InventoryScene extends Phaser.Scene {
 
             if (!this.lsolPlanted) {
                 getTokenBalance(LAINESOL_MINT).then((balance) => {
-                    this.lsolLabel.setText(formatNumber(balance as number));
+                    if (balance === null) {
+                        this.lsolLabel.setText(formatNumber(0));
+                    } else {
+                        this.lsolLabel.setText(formatNumber(balance as number));
+                    }
                 });
             } else {
                 this.lsolLabel.setText("Planted");
@@ -151,7 +163,11 @@ export default class InventoryScene extends Phaser.Scene {
 
             if (!this.bonkPlanted) {
                 getTokenBalance(BONK_MINT).then((balance) => {
-                    this.bonkLabel.setText(formatNumber(balance as number));
+                    if (balance === null) {
+                        this.bonkLabel.setText(formatNumber(0));
+                    } else {
+                        this.bonkLabel.setText(formatNumber(balance as number));
+                    }
                 });
             } else {
                 this.bonkLabel.setText("Planted");

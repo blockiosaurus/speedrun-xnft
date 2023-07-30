@@ -7,7 +7,7 @@ import { Program } from '@coral-xyz/anchor';
 import { fetchCrops, getProgram, plantCrop, harvestCrop, updateCrop, Growth } from '../utils/speedrunProgram';
 
 export const HUD_HEIGHT = 64;
-const UPDATE_PERIOD = 10000;
+const UPDATE_PERIOD = 1000;
 
 export default class GameScene extends Phaser.Scene {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;

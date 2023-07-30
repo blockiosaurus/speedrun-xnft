@@ -4,7 +4,7 @@ import Player from '../components/player';
 import { Program } from '@coral-xyz/anchor';
 import { buildBed, buildBench, closeFarm, fetchFarm, getProgram } from '../utils/speedrunProgram';
 
-const UPDATE_PERIOD = 10000;
+const UPDATE_PERIOD = 1000;
 
 export default class HouseScene extends Phaser.Scene {
     map!: Phaser.Tilemaps.Tilemap;

@@ -253,3 +253,37 @@ export async function buildBench(program: Program) {
         })
         .rpc({ skipPreflight: true });
 }
+
+export async function buildDresser(program: Program) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .build({ item: { dresser: {} } })
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+            treasury: TREASURY,
+        })
+        .rpc({ skipPreflight: true });
+}
+
+export async function setAvatar(program: Program, avatar: string) {
+    const walletAddress = getWalletAddress();
+    const farmAddress = PublicKey.findProgramAddressSync(
+        [Buffer.from("farm"), walletAddress.toBuffer()],
+        program.programId
+    );
+
+    const init_tx = await program.methods
+        .setAvatar({ avatar })
+        .accounts({
+            farm: farmAddress[0],
+            payer: walletAddress,
+            treasury: TREASURY,
+        })
+        .rpc({ skipPreflight: true });
+}

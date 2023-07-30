@@ -493,6 +493,39 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "setAvatar",
+      "accounts": [
+        {
+          "name": "farm",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "treasury",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": "SetAvatarArgs"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -564,6 +597,16 @@
           {
             "name": "hasBench",
             "type": "bool"
+          },
+          {
+            "name": "hasDresser",
+            "type": "bool"
+          },
+          {
+            "name": "avatar",
+            "type": {
+              "option": "string"
+            }
           }
         ]
       }
@@ -649,6 +692,18 @@
       }
     },
     {
+      "name": "SetAvatarArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "avatar",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
       "name": "Item",
       "type": {
         "kind": "enum",
@@ -658,6 +713,9 @@
           },
           {
             "name": "Bench"
+          },
+          {
+            "name": "Dresser"
           }
         ]
       }

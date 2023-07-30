@@ -2,12 +2,14 @@ import { Program } from '@coral-xyz/anchor';
 import * as Phaser from 'phaser';
 import { fetchFarm, getProgram, initFarm } from '../utils/speedrunProgram';
 import { getWalletAddress, isXNFT } from '../utils/solana';
+import loadFont from '../utils/font';
 
 export default class LoginScene extends Phaser.Scene {
     hasFarm: boolean = false;
     bottomText!: Phaser.GameObjects.Text;
     program!: Program;
     fetched: boolean = false;
+    progress: number = 0;
 
     constructor() {
         super({ key: 'login' });
@@ -15,6 +17,11 @@ export default class LoginScene extends Phaser.Scene {
 
     preload() {
         // this.load.image('background', 'assets/background.png');
+        loadFont('Salmon', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Salmon.ttf');
+        this.load.audio('music', ['https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Spring.mp3', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Spring.ogg']);
+        this.load.image('YesButton', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/YesButton.png');
+        this.load.image('NoButton', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/NoButton.png');
+        this.load.image('Panel', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Panel.png');
         this.load.image('BuildingTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_Buildings.png');
         this.load.image('CropTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_Crops_Mining.png');
         this.load.image('MainTiles', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/CL_MainLev.png');
@@ -29,9 +36,15 @@ export default class LoginScene extends Phaser.Scene {
         this.load.tilemapTiledJSON('house', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/House.json');
         this.load.image('buildBed', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/BuildBed.png');
         this.load.image('buildBench', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/BuildBench.png');
+        this.load.image('buildDresser', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/BuildDresser.png');
         this.load.image('bed', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Bed.png');
         this.load.image('bench', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Bench.png');
+        this.load.image('bench', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/Dresser.png');
         this.load.image('bomb', 'https://raw.githubusercontent.com/blockiosaurus/speedrun-xnft/master/assets/bomb.png');
+
+        this.load.on('progress', (value: number) => {
+            this.progress = value * 100;
+        }, this);
     }
 
     create() {
@@ -40,13 +53,15 @@ export default class LoginScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#d8f8ff')
         this.cameras.main.fadeIn()
 
-        this.add.text(width / 2, height / 3, 'Welcome to Honeypot Fields!', { fontFamily: 'Monospace', fontSize: 48, color: '#000000', align: "center", wordWrap: { width } })
+        this.sound.add('music', { loop: true }).play();
+
+        this.add.text(width / 2, height / 3, 'Welcome to Honeypot Fields!', { fontFamily: 'Salmon', fontSize: 48, color: '#000000', align: "center", wordWrap: { width } })
             .setOrigin(0.5, 0.5);
 
-        this.add.text(width / 2, 2 * height / 3, 'The digital frontier of Defi meets the natural rhythm of a the farm life.', { fontFamily: 'Monospace', fontSize: 24, color: '#000000', align: "center", wordWrap: { width } })
+        this.add.text(width / 2, 2 * height / 3, 'The digital frontier of Defi meets the natural rhythm of a farm life.', { fontFamily: 'Salmon', fontSize: 24, color: '#000000', align: "center", wordWrap: { width } })
             .setOrigin(0.5, 0.5);
 
-        this.bottomText = this.add.text(width / 2, 3 * height / 4, 'Loading...', { fontFamily: 'Monospace', fontSize: 12, color: '#000000', align: "center", wordWrap: { width } })
+        this.bottomText = this.add.text(width / 2, 3 * height / 4, 'Loading...', { fontFamily: 'Salmon', fontSize: 12, color: '#000000', align: "center", wordWrap: { width } })
             .setOrigin(0.5, 0.5);
 
         this.program = getProgram();
@@ -83,7 +98,7 @@ export default class LoginScene extends Phaser.Scene {
 
     update() {
         // console.log(window.phantom.solana.isConnected)
-        if (window.phantom.solana.isConnected && !this.fetched) {
+        if (window.phantom.solana.isConnected && !this.fetched && this.progress === 100) {
             this.fetched = true;
             fetchFarm(this.program).then((farm) => {
                 console.log(farm);
@@ -105,6 +120,8 @@ export default class LoginScene extends Phaser.Scene {
                     });
                 }
             });
+        } else if (this.progress < 100) {
+            this.bottomText.setText('Loading... ' + this.progress + '%');
         }
     }
 }
